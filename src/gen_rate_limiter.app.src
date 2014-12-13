@@ -1,0 +1,8 @@
+{application, gen_rate_limiter,
+ [{description, ""},
+  {vsn, "1"},
+  {modules, [gen_rate_limiter]},
+  {registered, []},
+  {applications, [kernel, 
+                  stdlib]},
+  {env, []}]}.

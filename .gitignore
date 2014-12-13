@@ -1,0 +1,11 @@
+*.beam
+
+/deps/
+/ebin/
+/logs/
+/.rebar/
+
+/erl_crash.dump
+/Mnesia.*
+
+.DS_Store
