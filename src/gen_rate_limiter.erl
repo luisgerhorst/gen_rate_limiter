@@ -18,13 +18,13 @@
 %% The callback module has to define 4 function that define the behaviour of the
 %% rl:
 
--callback init(Args :: term()) -> 
+-callback init(Args :: term()) ->
     State :: term().
 
 %% Called after startup. Args is the same as in
 %% gen_rate_limiter:start_link(Module, Args) -> [See Gen Server start_link return]
 
--callback before_run(State :: term()) -> 
+-callback before_run(State :: term()) ->
     State :: term().
 
 %% Called every time before Module:run is called. Runs in the rl process.
@@ -55,7 +55,7 @@ run(Pid, Args) ->
     Pid ! {ok, NewRLState},
     Return.
 
-init({Module, Args}) -> 
+init({Module, Args}) ->
     {ok, {Module, Module:init(Args)}}.
 
 handle_call({request, Pid}, From, {Module, RLState}) when is_pid(Pid), is_atom(Module) ->
@@ -76,20 +76,20 @@ handle_call({request, Pid}, From, {Module, RLState}) when is_pid(Pid), is_atom(M
        true -> ok end,
     {noreply, {Module, FinalRLState}};
 
-handle_call(Msg, {Pid, _Tag} = _From, State) ->
-    io:format("Gen Rate Limiter ~p: Received unexpected call ~p from ~p while in state ~p.",
-              [self(), Msg, Pid, State]),
+handle_call(Msg, {Pid, _Tag} = _From, {Module, RLState} = State) ->
+    io:format("Gen Rate Limiter ~p (callback module ~p): Received unexpected call ~p from ~p while in state ~p.",
+              [self(), Module, Msg, Pid, RLState]),
     {noreply, State}.
 
-%% ===================================================================
-%% Boilerplate
-%% ===================================================================
+handle_cast(Msg, {Module, RLState} = State) ->
+    io:format("Gen Rate Limiter ~p (callback module ~p): Received unexpected cast ~p while in state ~p.",
+              [self(), Module, Msg, RLState]),
+    {noreply, State}.
 
-handle_cast(_Msg, _State) ->
-    throw(unexpected).
-
-handle_info(_Msg, _State) ->
-    throw(unexpected).
+handle_info(Msg, {Module, RLState} = State) ->
+    io:format("Gen Rate Limiter ~p (callback module ~p): Received unexpected info ~p while in state ~p.",
+              [self(), Module, Msg, RLState]),
+    {noreply, State}.
 
 code_change(_OldVsn, State, _Extra) ->
     {ok, State}.
