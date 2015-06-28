@@ -22,7 +22,7 @@
     State :: term().
 
 %% Called after startup. Args is the same as in
-%% rpm_gen_rate_limiter:start_link(Module, Args) -> [See Gen Server start_link return]
+%% gen_rate_limiter:start_link(Module, Args) -> [See Gen Server start_link return]
 
 -callback before_run(State :: term()) -> 
     State :: term().
@@ -32,7 +32,7 @@
 -callback run(Args :: term(), State :: term()) ->
     {Return :: term(), State :: term()}.
 
-%% Called when rpm_gen_rate_limiter:run(Pid, Args) -> Return is called. Runs in
+%% Called when gen_rate_limiter:run(Pid, Args) -> Return is called. Runs in
 %% the caller's process, if this call fails the rl's old State will be kept.
 
 -callback to_wait(State :: term()) ->
